@@ -1,8 +1,8 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-VERSION="2.0"
+VERSION="3.0"
+REPO="https://github.com/OxygenForge-code/nexterm"
 
-# Colors
 RED="\e[31m"
 GREEN="\e[32m"
 CYAN="\e[36m"
@@ -22,8 +22,18 @@ echo ""
 }
 
 sysinfo() {
-echo -e "${GREEN}System Information:${RESET}"
+echo -e "${GREEN}System:${RESET}"
 uname -a
+}
+
+cpuusage() {
+echo -e "${GREEN}CPU Usage:${RESET}"
+top -bn1 | grep "%Cpu"
+}
+
+ramusage() {
+echo -e "${GREEN}RAM Usage:${RESET}"
+free -h
 }
 
 diskusage() {
@@ -32,8 +42,42 @@ df -h /storage/emulated 2>/dev/null
 }
 
 netcheck() {
-echo -e "${GREEN}Checking Internet...${RESET}"
+echo -e "${GREEN}Internet Test:${RESET}"
 ping -c 2 8.8.8.8
+}
+
+ipinfo() {
+echo -e "${GREEN}Local IP:${RESET}"
+ip addr show | grep inet | grep -v 127.0.0.1
+echo ""
+echo -e "${GREEN}Public IP:${RESET}"
+curl -s ifconfig.me
+echo ""
+}
+
+pkgcount() {
+echo -e "${GREEN}Installed Packages:${RESET}"
+dpkg -l | wc -l
+}
+
+securitycheck() {
+echo -e "${GREEN}Security Check:${RESET}"
+if command -v su >/dev/null 2>&1; then
+    echo "Device appears to have root access."
+else
+    echo "No root binary found."
+fi
+}
+
+update() {
+echo -e "${CYAN}Updating NexTerm...${RESET}"
+cd ~
+rm -rf nexterm
+git clone $REPO
+cd nexterm
+bash install.sh
+echo -e "${GREEN}Update complete.${RESET}"
+exit
 }
 
 menu() {
@@ -42,32 +86,47 @@ do
 clear
 logo
 echo "1) System Info"
-echo "2) Disk Usage"
-echo "3) Check Internet"
-echo "4) Version"
-echo "5) Exit"
+echo "2) CPU Usage"
+echo "3) RAM Usage"
+echo "4) Disk Usage"
+echo "5) Network Test"
+echo "6) IP Info"
+echo "7) Package Count"
+echo "8) Security Check"
+echo "9) Update"
+echo "0) Exit"
 echo ""
-read -p "Select an option: " choice
+read -p "Select: " choice
 
 case $choice in
 1) sysinfo ;;
-2) diskusage ;;
-3) netcheck ;;
-4) echo "NexTerm Version: $VERSION" ;;
-5) exit ;;
-*) echo -e "${RED}Invalid option.${RESET}" ;;
+2) cpuusage ;;
+3) ramusage ;;
+4) diskusage ;;
+5) netcheck ;;
+6) ipinfo ;;
+7) pkgcount ;;
+8) securitycheck ;;
+9) update ;;
+0) exit ;;
+*) echo -e "${RED}Invalid.${RESET}" ;;
 esac
 
 echo ""
-read -p "Press Enter to continue..."
+read -p "Press Enter..."
 done
 }
 
-# Argument mode
 case "$1" in
 sysinfo) sysinfo ;;
+cpu) cpuusage ;;
+ram) ramusage ;;
 disk) diskusage ;;
 net) netcheck ;;
-version) echo "NexTerm Version: $VERSION" ;;
+ip) ipinfo ;;
+pkg) pkgcount ;;
+sec) securitycheck ;;
+update) update ;;
+version) echo "NexTerm v$VERSION" ;;
 *) menu ;;
 esac
