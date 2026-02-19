@@ -1,40 +1,24 @@
-#!/bin/bash
-# Nexterm Installation Script
+#!/data/data/com.termux/files/usr/bin/bash
 
-set -euo pipefail
+echo "Installing NexTerm..."
 
-INSTALL_DIR="${INSTALL_DIR:-.}"
-NEXTERM_DIR="${INSTALL_DIR}/nexterm"
+# Script'in gerçek bulunduğu klasör
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
-echo "Installing Nexterm..."
+TARGET="$PREFIX/opt/nexterm"
 
-# Check if nexterm directory exists
-if [ ! -d "${NEXTERM_DIR}" ]; then
-    echo "Error: nexterm directory not found at ${NEXTERM_DIR}"
-    exit 1
-fi
+# Eski kurulumu temizle
+rm -rf "$TARGET"
+mkdir -p "$TARGET"
 
-# Make main script executable
-if [ -f "${NEXTERM_DIR}/nexterm" ]; then
-    chmod +x "${NEXTERM_DIR}/nexterm"
-    echo "✓ Made nexterm executable"
-fi
+# Tüm dosyaları kopyala
+cp -r "$SCRIPT_DIR"/* "$TARGET"
 
-# Make all shell scripts in core directory executable
-if [ -d "${NEXTERM_DIR}/core" ]; then
-    chmod +x "${NEXTERM_DIR}/core"/*.sh 2>/dev/null || true
-    echo "✓ Made core scripts executable"
-fi
+# Çalıştırılabilir yap
+chmod +x "$TARGET/nexterm"
 
-# Make all shell scripts in modules directory executable
-if [ -d "${NEXTERM_DIR}/modules" ]; then
-    chmod +x "${NEXTERM_DIR}/modules"/*.sh 2>/dev/null || true
-    echo "✓ Made module scripts executable"
-fi
+# Global komut linki
+ln -sf "$TARGET/nexterm" "$PREFIX/bin/nexterm"
 
-# Create symlink or add to PATH instructions
-echo ""
-echo "Installation complete!"
-echo "You can now run: ${NEXTERM_DIR}/nexterm [COMMAND]"
-echo ""
-echo "To add to PATH, run: export PATH=\"${NEXTERM_DIR}:\$PATH\""
+echo "Installation complete."
+echo "You can now run: nexterm"
