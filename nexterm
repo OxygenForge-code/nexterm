@@ -1,1 +1,34 @@
-Current Date and Time (UTC - YYYY-MM-DD HH:MM:SS formatted): 2026-02-19 18:52:59
+#!/data/data/com.termux/files/usr/bin/bash
+
+clear
+echo "======================="
+echo "      NexTerm v1.0"
+echo "======================="
+echo ""
+echo "1) System Info"
+echo "2) Disk Usage"
+echo "3) Check Internet"
+echo "4) Exit"
+echo ""
+read -p "Select an option: " choice
+
+case $choice in
+1)
+    echo ""
+    uname -a
+    ;;
+2)
+    echo ""
+    df -h
+    ;;
+3)
+    echo ""
+    ping -c 2 google.com
+    ;;
+4)
+    exit
+    ;;
+*)
+    echo "Invalid option."
+    ;;
+esac
