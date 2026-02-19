@@ -18,25 +18,24 @@ do
         1)
             echo ""
             uname -a
-            read -p "Press Enter to continue..."
             ;;
         2)
             echo ""
             df -h
-            read -p "Press Enter to continue..."
             ;;
         3)
             echo ""
-            ping -c 2 google.com
-            read -p "Press Enter to continue..."
+            ping -c 2 8.8.8.8
             ;;
         4)
-            echo "Goodbye!"
+            echo "Goodbye."
             exit
             ;;
         *)
             echo "Invalid option."
-            sleep 1
             ;;
     esac
+
+    echo ""
+    read -p "Press Enter to return to menu..."
 done
