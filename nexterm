@@ -1,34 +1,42 @@
 #!/data/data/com.termux/files/usr/bin/bash
 
-clear
-echo "======================="
-echo "      NexTerm v1.0"
-echo "======================="
-echo ""
-echo "1) System Info"
-echo "2) Disk Usage"
-echo "3) Check Internet"
-echo "4) Exit"
-echo ""
-read -p "Select an option: " choice
+while true
+do
+    clear
+    echo "======================="
+    echo "      NexTerm v1.0"
+    echo "======================="
+    echo ""
+    echo "1) System Info"
+    echo "2) Disk Usage"
+    echo "3) Check Internet"
+    echo "4) Exit"
+    echo ""
+    read -p "Select an option: " choice
 
-case $choice in
-1)
-    echo ""
-    uname -a
-    ;;
-2)
-    echo ""
-    df -h
-    ;;
-3)
-    echo ""
-    ping -c 2 google.com
-    ;;
-4)
-    exit
-    ;;
-*)
-    echo "Invalid option."
-    ;;
-esac
+    case $choice in
+        1)
+            echo ""
+            uname -a
+            read -p "Press Enter to continue..."
+            ;;
+        2)
+            echo ""
+            df -h
+            read -p "Press Enter to continue..."
+            ;;
+        3)
+            echo ""
+            ping -c 2 google.com
+            read -p "Press Enter to continue..."
+            ;;
+        4)
+            echo "Goodbye!"
+            exit
+            ;;
+        *)
+            echo "Invalid option."
+            sleep 1
+            ;;
+    esac
+done
