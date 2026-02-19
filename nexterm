@@ -1,132 +1,68 @@
-#!/data/data/com.termux/files/usr/bin/bash
+#!/bin/bash
+# Nexterm - Advanced Terminal System Information Tool
+# Main router/executor
 
-VERSION="3.0"
-REPO="https://github.com/OxygenForge-code/nexterm"
+set -euo pipefail
 
-RED="\e[31m"
-GREEN="\e[32m"
-CYAN="\e[36m"
-YELLOW="\e[33m"
-RESET="\e[0m"
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "">${BASH_SOURCE[0]}")" && pwd)"
 
-logo() {
-echo -e "${CYAN}"
-echo " _   _            _____                   "
-echo "| \ | | ___  __  |_   _|__ _ __ _ __ ___ "
-echo "|  \| |/ _ \/ _|   | |/ _ \ '__| '_ \` _ \\"
-echo "| |\  |  __/ (_|   | |  __/ |  | | | | | |"
-echo "|_| \_|\___|\__|   |_|\___|_|  |_| |_| |_|"
-echo -e "${RESET}"
-echo -e "${YELLOW}NexTerm v$VERSION${RESET}"
-echo ""
+# Source configuration and core modules
+source "${SCRIPT_DIR}/core/config.sh"
+source "${SCRIPT_DIR}/core/logger.sh"
+source "${SCRIPT_DIR}/core/colors.sh"
+
+# Show usage information
+usage() {
+    echo "Nexterm - Terminal System Information Tool"
+    echo ""
+    echo "Usage: nexterm [COMMAND] [OPTIONS]"
+    echo ""
+    echo "Commands:"
+    echo "  sysinfo    Display system information"
+    echo "  cpu        Display CPU information"
+    echo "  ram        Display RAM information"
+    echo "  disk       Display disk information"
+    echo "  network    Display network information"
+    echo "  help       Show this help message"
+    echo ""
 }
 
-sysinfo() {
-echo -e "${GREEN}System:${RESET}"
-uname -a
+# Main entry point
+main() {
+    local command="${1:-help}"
+    
+    case "${command}" in
+        sysinfo)
+            source "${SCRIPT_DIR}/modules/sysinfo.sh"
+            show_sysinfo
+            ;;
+        cpu)
+            source "${SCRIPT_DIR}/modules/cpu.sh"
+            show_cpu_info
+            ;;
+        ram)
+            source "${SCRIPT_DIR}/modules/ram.sh"
+            show_ram_info
+            ;;
+        disk)
+            source "${SCRIPT_DIR}/modules/disk.sh"
+            show_disk_info
+            ;;
+        network)
+            source "${SCRIPT_DIR}/modules/network.sh"
+            show_network_info
+            ;;
+        help|--help|-h)
+            usage
+            ;;
+        *)
+            log_error "Unknown command: ${command}"
+            usage
+            exit 1
+            ;;
+    esac
 }
 
-cpuusage() {
-echo -e "${GREEN}CPU Usage:${RESET}"
-top -bn1 | grep "%Cpu"
-}
-
-ramusage() {
-echo -e "${GREEN}RAM Usage:${RESET}"
-free -h
-}
-
-diskusage() {
-echo -e "${GREEN}Main Storage:${RESET}"
-df -h /storage/emulated 2>/dev/null
-}
-
-netcheck() {
-echo -e "${GREEN}Internet Test:${RESET}"
-ping -c 2 8.8.8.8
-}
-
-ipinfo() {
-echo -e "${GREEN}Local IP:${RESET}"
-ip addr show | grep inet | grep -v 127.0.0.1
-echo ""
-echo -e "${GREEN}Public IP:${RESET}"
-curl -s ifconfig.me
-echo ""
-}
-
-pkgcount() {
-echo -e "${GREEN}Installed Packages:${RESET}"
-dpkg -l | wc -l
-}
-
-securitycheck() {
-echo -e "${GREEN}Security Check:${RESET}"
-if command -v su >/dev/null 2>&1; then
-    echo "Device appears to have root access."
-else
-    echo "No root binary found."
-fi
-}
-
-update() {
-echo -e "${CYAN}Updating NexTerm...${RESET}"
-cd ~
-rm -rf nexterm
-git clone $REPO
-cd nexterm
-bash install.sh
-echo -e "${GREEN}Update complete.${RESET}"
-exit
-}
-
-menu() {
-while true
-do
-clear
-logo
-echo "1) System Info"
-echo "2) CPU Usage"
-echo "3) RAM Usage"
-echo "4) Disk Usage"
-echo "5) Network Test"
-echo "6) IP Info"
-echo "7) Package Count"
-echo "8) Security Check"
-echo "9) Update"
-echo "0) Exit"
-echo ""
-read -p "Select: " choice
-
-case $choice in
-1) sysinfo ;;
-2) cpuusage ;;
-3) ramusage ;;
-4) diskusage ;;
-5) netcheck ;;
-6) ipinfo ;;
-7) pkgcount ;;
-8) securitycheck ;;
-9) update ;;
-0) exit ;;
-*) echo -e "${RED}Invalid.${RESET}" ;;
-esac
-
-echo ""
-read -p "Press Enter..."
-done
-}
-
-case "$1" in
-sysinfo) sysinfo ;;
-cpu) cpuusage ;;
-ram) ramusage ;;
-disk) diskusage ;;
-net) netcheck ;;
-ip) ipinfo ;;
-pkg) pkgcount ;;
-sec) securitycheck ;;
-update) update ;;
-version) echo "NexTerm v$VERSION" ;;
-*) menu ;;
-esac
+# Run main function
+main "$@"
